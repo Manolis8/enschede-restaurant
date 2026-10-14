@@ -264,7 +264,7 @@
       { label: 'rijst, salade & aardappelschijfjes', pieces: [['rice', 35, 31, 40], ['salad', 32, 68, 42], ['potato', 68, 54, 46]] },
       { label: 'döner & adana', pieces: [['doner', 38, 48, 50], ['adana', 67, 50, 50, -18]] },
       { label: 'biefstuk & lamskoteletten', pieces: [['biefstuk', 36, 54, 46, 12], ['chops', 64, 46, 54, 8]] },
-      { label: 'Turks brood & saus', pieces: [['bread', 50, 50, 66], ['sauce', 50, 51, 22]] },
+      { label: 'Turks brood & saus', pieces: [['bread', 50, 50, 54], ['sauce', 50, 51, 20]] },
     ].map(l => ({ label: l.label, art: dash + `<div class="layer__food">${place(l.pieces)}</div>` }));
   }
   const scene = $('.stack__scene');
@@ -308,6 +308,17 @@
     $('span', el).textContent = open ? 'Nu open · tot 22:00' : mins < 12 * 60 ? 'Nu gesloten · vandaag open om 12:00' : 'Nu gesloten · morgen open om 12:00';
   }
   status(); setInterval(status, 60000);
+
+  // the version switch shows at the top and bottom of the page, out of the way of the content in between
+  const vs = $('.vswitch');
+  if (vs && 'IntersectionObserver' in window) {
+    const seen = new Set();
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => (e.isIntersecting ? seen.add(e.target) : seen.delete(e.target)));
+      vs.classList.toggle('is-away', !seen.size);
+    });
+    [$('.hero'), $('.foot')].forEach(el => io.observe(el));
+  }
 
   // the map loads only when it gets close
   const iframe = $('.map iframe');
