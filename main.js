@@ -309,7 +309,7 @@
   }
   status(); setInterval(status, 60000);
 
-  // the version switch shows at the top and bottom of the page, out of the way of the content in between
+  // the version switch shows at the top and bottom of the page (phones: only at the bottom), out of the way of the content
   const vs = $('.vswitch');
   if (vs && 'IntersectionObserver' in window) {
     const seen = new Set();
@@ -317,7 +317,7 @@
       es.forEach(e => (e.isIntersecting ? seen.add(e.target) : seen.delete(e.target)));
       vs.classList.toggle('is-away', !seen.size);
     });
-    [$('.hero'), $('.foot')].forEach(el => io.observe(el));
+    (PHONE ? [$('.foot')] : [$('.hero'), $('.foot')]).forEach(el => io.observe(el));
   }
 
   // the map loads only when it gets close
