@@ -4,6 +4,17 @@ A one-page website for **Star Grill Afhaalcentrum**, a Turkish grill and takeawa
 
 ![The plate gets served](docs/03-plate-served.jpg)
 
+## Two versions
+
+The site comes in two versions with the same layout, text and animation. A small switch in the bottom-left corner moves between them.
+
+| | URL | The food |
+|---|---|---|
+| **Getekend** (drawn) | [star-grill-enschede.vercel.app](https://star-grill-enschede.vercel.app) | Every dish drawn in code as a sticker-style illustration |
+| **Foto's** (photos) | [star-grill-enschede.vercel.app/foto](https://star-grill-enschede.vercel.app/foto) | Realistic food photos: cut-outs that fly onto a real plate, and a photo on every dish card |
+
+In the photo version, the Pirzola Schotel card and the polaroid use Star Grill's own photo. The other food photos were generated with Higgsfield (GPT Image 2.5), with that real photo as the reference so the rice, salad, potato slices and plates match what they actually serve. The page says so in small print under the dish cards. The images are trimmed WebP files on the Higgsfield CDN.
+
 ## The five sections
 
 | | |
@@ -23,9 +34,9 @@ A one-page website for **Star Grill Afhaalcentrum**, a Turkish grill and takeawa
 
 ## How it's built
 
-- One static page: `index.html`, `styles.css`, `main.js`, `img/`. No build step.
+- Static pages, no build step: `index.html` (drawn) and `foto/index.html` (photos) share `styles.css` and `main.js`. The photo page sets `data-version="foto"` on `<html>` and `main.js` fills in photos instead of drawings.
 - GSAP 3.13 with ScrollTrigger, and Lenis 1.3.4 for smooth scrolling (in `assets/vendor/`). Sections 1 and 2 are pinned and scrubbed with the scroll on desktop. On phones nothing is pinned and each animation plays as its section scrolls by.
-- **All food illustrations are drawn in code** as inline SVG: rice, salad, potato slices, sauce, lamb chops, döner, adana, köfte, steak strips, Turkish bread and lahmacun. Shapes come from a seed, so they look hand-made but identical on every load. The only photos are their two real ones, in `img/`.
+- In the drawn version, **all food illustrations are drawn in code** as inline SVG: rice, salad, potato slices, sauce, lamb chops, döner, adana, köfte, steak strips, Turkish bread and lahmacun. Shapes come from a seed, so they look hand-made but identical on every load. The only photos are their two real ones, in `img/`.
 - Type: Bagel Fat One (headings), DM Sans (text and prices), Caveat (handwritten labels), self-hosted in `assets/fonts/`.
 - Palette: cream `#F4E0C2`, paper `#FFF8EC`, orange `#EE6A2B`, dark orange `#C9501A`, ink `#3A1F12`, sign red `#C3262E`, sign blue `#1F3A8A`, evil-eye blue `#5FB6EC`. Everything has a 3 px ink outline and a hard shadow, like a sticker.
 - Schema.org `Restaurant` data with the address, phone, coordinates and opening hours.

@@ -1,11 +1,26 @@
 /* Star Grill
    1 · the plate gets served (pinned, scrubbed)   2 · Star Mix layer by layer (pinned, scrubbed)
    3 · favourites land on the checkerboard          4 · the menu        5 · visit, with a live open/closed pill
-   All food is drawn here as SVG from a seed, so it looks hand-made but identical on every load. */
+   Two versions share this file: the drawn one (/) draws all food here as SVG from a seed, so it looks
+   hand-made but identical on every load; the photo one (/foto, <html data-version="foto">) uses photos. */
 (() => {
   gsap.registerPlugin(ScrollTrigger);
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const PHONE = matchMedia('(max-width: 760px)').matches;
+  const PHOTO = document.documentElement.dataset.version === 'foto';
+  // photo version: cut-outs and dish photos on the CDN (made with Higgsfield, see README); the Pirzola card is their real photo
+  const CDN = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38RfhGrFWe0TNVNCsp1Pnsu6Xk4/';
+  const PICS = Object.fromEntries(Object.entries({
+    plate: '52df128a-bfe2-4e45-b9d6-06b9c825fea8', rice: 'bea6d3f3-e490-4308-a69f-0e74659a5dc4', salad: '490d284b-4d03-4d29-b278-68917ead60e7',
+    potato: '3f6c4440-3980-47a3-9b14-329c473adc9f', sauce: 'dba43ddc-be4b-4f1d-b66a-67ab659c18c2', chops: '024197fb-7209-4078-8745-b32bbe662492',
+    doner: '5a95c9b7-44c3-48cb-b133-1c28533ed571', adana: '12c58cc1-14f1-4bd6-9399-55072e7d920a', biefstuk: '504da7f1-d656-438c-affd-85f4e3cd1fed',
+    bread: '72bf1509-ba7a-426b-adf8-e1b164a86a65',
+    'dish-doner': 'aa3671ee-54fa-42c5-87ab-0e22df9dfab7', 'dish-adana-broodje': '14656b4f-db29-47a9-b652-5a0e5b7ed2b8',
+    'dish-lahmacun': 'c36b8b44-6d81-430f-a40f-051c7eb61977', 'dish-kofte': '20228b59-37c6-4489-a2e5-68aa3442301c',
+    'dish-sis': 'd654b3a2-96d6-4837-a6ed-3a5e28b9b1b3', 'dish-grillmix': 'ec67942c-2a85-4441-a670-6cd6f740aa97',
+    'dish-starmix': 'a15f3e32-f78e-4809-9e58-1c06ca0ddea9',
+  }).map(([k, id]) => [k, CDN + id + '.webp']));
+  PICS['dish-pirzola'] = '/img/pirzola-schotel.jpg';
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
@@ -214,29 +229,49 @@
   $$('.eye').forEach(e => { e.innerHTML = EYE; });
 
   /* ───────── fill in the art ───────── */
-  $('.plate').innerHTML = svgWrap(FOOD.plate(1));
-  const ART = { rice: FOOD.rice(2), salad: FOOD.salad(3), potato: FOOD.potato(4), sauce: FOOD.sauce(5), chops: FOOD.chops(6) };
-  $$('.ing').forEach(el => { $('.ing__art', el).innerHTML = svgWrap(ART[el.dataset.ing]); });
-  const DISH = {
-    doner: () => pocket('doner', 21), 'adana-broodje': () => pocket('adana', 22), lahmacun: () => FOOD.lahmacun(23),
-    kofte: () => miniPlate('kofte', 24), sis: () => miniPlate('sis', 25), pirzola: () => miniPlate('pirzola', 26),
-    grillmix: () => miniPlate('grillmix', 27), starmix: () => miniPlate('starmix', 28),
-  };
-  $$('.dish__art').forEach(el => { el.innerHTML = svgWrap(DISH[el.dataset.dish](), '-52 -52 104 104', 2); });
-
   // Star Mix layers, bottom to top
-  const LAYERS = [
-    { label: 'het bord', art: FOOD.plate(31) },
-    { label: 'rijst, salade & aardappelschijfjes', art: at(-16, -16, .42, FOOD.rice(32)) + at(-18, 14, .44, FOOD.salad(33)) + at(18, 6, .48, FOOD.potato(34, 7)) },
-    { label: 'döner & adana', art: at(-10, -6, .55, FOOD.doner(35, 14)) + at(14, 14, .46, FOOD.adana(36), -28) + at(18, -16, .4, FOOD.adana(37), 12) },
-    { label: 'biefstuk & lamskoteletten', art: at(-14, 8, .46, FOOD.biefstuk(38, 5), 20) + at(12, -6, .55, FOOD.chops(39, 3)) },
-    { label: 'Turks brood & saus', art: FOOD.bread(40, 4) + at(-2, -2, .3, FOOD.sauce(41)) },
-  ];
+  let LAYERS;
+  if (!PHOTO) {
+    $('.plate').innerHTML = svgWrap(FOOD.plate(1));
+    const ART = { rice: FOOD.rice(2), salad: FOOD.salad(3), potato: FOOD.potato(4), sauce: FOOD.sauce(5), chops: FOOD.chops(6) };
+    $$('.ing').forEach(el => { $('.ing__art', el).innerHTML = svgWrap(ART[el.dataset.ing]); });
+    const DISH = {
+      doner: () => pocket('doner', 21), 'adana-broodje': () => pocket('adana', 22), lahmacun: () => FOOD.lahmacun(23),
+      kofte: () => miniPlate('kofte', 24), sis: () => miniPlate('sis', 25), pirzola: () => miniPlate('pirzola', 26),
+      grillmix: () => miniPlate('grillmix', 27), starmix: () => miniPlate('starmix', 28),
+    };
+    $$('.dish__art').forEach(el => { el.innerHTML = svgWrap(DISH[el.dataset.dish](), '-52 -52 104 104', 2); });
+    LAYERS = [
+      { label: 'het bord', art: FOOD.plate(31) },
+      { label: 'rijst, salade & aardappelschijfjes', art: at(-16, -16, .42, FOOD.rice(32)) + at(-18, 14, .44, FOOD.salad(33)) + at(18, 6, .48, FOOD.potato(34, 7)) },
+      { label: 'döner & adana', art: at(-10, -6, .55, FOOD.doner(35, 14)) + at(14, 14, .46, FOOD.adana(36), -28) + at(18, -16, .4, FOOD.adana(37), 12) },
+      { label: 'biefstuk & lamskoteletten', art: at(-14, 8, .46, FOOD.biefstuk(38, 5), 20) + at(12, -6, .55, FOOD.chops(39, 3)) },
+      { label: 'Turks brood & saus', art: FOOD.bread(40, 4) + at(-2, -2, .3, FOOD.sauce(41)) },
+    ].map(l => ({ ...l, art: svgWrap(`<circle class="dash" r="49"/>${l.art}`, '-55 -55 110 110', 2.5) }));
+  } else {
+    const cut = k => `<img class="cut" src="${PICS[k]}" alt="" draggable="false" decoding="async" />`;
+    $('.plate').innerHTML = cut('plate');
+    $$('.ing').forEach(el => { $('.ing__art', el).innerHTML = cut(el.dataset.ing); });
+    $$('.dish__art').forEach(el => {
+      el.innerHTML = `<img class="dish__photo" src="${PICS['dish-' + el.dataset.dish]}" alt="${el.parentNode.querySelector('h3').textContent}" loading="lazy" decoding="async" />`;
+    });
+    // each piece: [photo, centre x %, centre y %, width %, rotation]
+    const place = pieces => pieces.map(([k, x, y, w, r = 0]) =>
+      `<img class="cut" src="${PICS[k]}" alt="" draggable="false" decoding="async" style="left:${x}%;top:${y}%;width:${w}%;--r:${r}deg" />`).join('');
+    const dash = '<svg viewBox="-55 -55 110 110" aria-hidden="true"><circle class="dash" r="49"/></svg>';
+    LAYERS = [
+      { label: 'het bord', pieces: [['plate', 50, 50, 92]] },
+      { label: 'rijst, salade & aardappelschijfjes', pieces: [['rice', 35, 31, 40], ['salad', 32, 68, 42], ['potato', 68, 54, 46]] },
+      { label: 'döner & adana', pieces: [['doner', 38, 48, 50], ['adana', 67, 50, 50, -18]] },
+      { label: 'biefstuk & lamskoteletten', pieces: [['biefstuk', 36, 54, 46, 12], ['chops', 64, 46, 54, 8]] },
+      { label: 'Turks brood & saus', pieces: [['bread', 50, 50, 66], ['sauce', 50, 51, 22]] },
+    ].map(l => ({ label: l.label, art: dash + `<div class="layer__food">${place(l.pieces)}</div>` }));
+  }
   const scene = $('.stack__scene');
   LAYERS.forEach((l, i) => {
     const d = document.createElement('div');
     d.className = 'layer';
-    d.innerHTML = `<div class="layer__disc">${svgWrap(`<circle class="dash" r="49"/>${l.art}`, '-55 -55 110 110', 2.5)}</div><p class="layer__label layer__label--${i % 2 ? 'l' : 'r'}">${l.label}</p>`;
+    d.innerHTML = `<div class="layer__disc">${l.art}</div><p class="layer__label layer__label--${i % 2 ? 'l' : 'r'}">${l.label}</p>`;
     scene.appendChild(d);
   });
   const layerEls = $$('.layer', scene);
